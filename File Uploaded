@@ -1,0 +1,166 @@
+
+
+
+
+// app.js
+_________________________________________________________________
+
+
+const express = require('express');
+const multer = require('multer');
+const mongoose = require('mongoose');
+const app = express();
+const port = 3000;
+
+app.use("view engini" ,"ejs");
+app.use(express.urlencoded({extranded:true}));
+
+// Connect to MongoDB
+mongoose.connect("mongodb//localhost:271017/imageupload")
+.then(()=>{console.log("connect")});
+.catch((e)=>{console.log(e)});
+
+// Define the file schema
+const FileSchema = new mongoose.Schema({
+  filename: String,
+  path: String,
+  originalname: String
+});
+
+const File = mongoose.model('File', FileSchema);
+
+// Set storage engine
+const storage = multer.diskStorage({
+  destination: './uploads/image',
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+  }
+});
+
+// Initialize multer
+const upload = multer({
+  storage: storage
+}).single('file');
+
+// Serve HTML form for file upload
+app.get('/', (req, res) => {
+  res.render("filuplod");
+});
+
+// Handle file upload and save to database
+app.post('/upload', (req, res) => {
+  upload(req, res, async (err) => {
+    if (err) {
+      res.send('Error uploading file.');
+    } else {
+      // Save file information to the database
+      const file = new File({
+        filename: req.file.filename,
+        path: req.file.path,
+        originalname: req.file.originalname
+      });
+
+      await file.save();
+
+      res.send('File uploaded and saved to database!');
+    }
+  });
+});
+
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
+
+
+
+<!-- index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Upload Example</title>
+</head>
+<body>
+  <h1>File Upload Example</h1>
+  <form action="/upload" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" />
+    <input type="submit" value="Upload" />
+  </form>
+</body>
+</html>
+
+
+
+
+
+
+<!--------------------------------------------------------backend code--------------------------------------------------------------------------!>
+
+
+
+const express = require('express');
+const multer = require('multer');
+const mongoose = require('mongoose');
+const app = express();
+const port = 3000;
+
+app.use("view engini" ,"ejs");
+app.use(express.urlencoded({extranded:true}));
+
+// Connect to MongoDB
+mongoose.connect("mongodb//localhost:271017/imageupload")
+.then(()=>{console.log("connect")});
+.catch((e)=>{console.log(e)});
+
+// Define the file schema
+const FileSchema = new mongoose.Schema({
+  filename: String,
+  path: String,
+  originalname: String
+});
+
+const File = mongoose.model('File', FileSchema);
+
+// Set storage engine
+const storage = multer.diskStorage({
+  destination: './uploads/image',
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+  }
+});
+
+// Initialize multer
+const upload = multer({
+  storage: storage
+}).single('file');
+
+// Serve HTML form for file upload
+app.get('/', (req, res) => {
+  res.render("filuplod");
+});
+
+// Handle file upload and save to database
+app.post('/upload', (req, res) => {
+  upload(req, res, async (err) => {
+    if (err) {
+      res.send('Error uploading file.');
+    } else {
+      // Save file information to the database
+      const file = new File({
+        filename: req.file.filename,
+        path: req.file.path,
+        originalname: req.file.originalname
+      });
+
+      await file.save();
+
+      res.send('File uploaded and saved to database!');
+    }
+  });
+});
+
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
